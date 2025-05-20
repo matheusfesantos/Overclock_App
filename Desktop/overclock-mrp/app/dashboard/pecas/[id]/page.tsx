@@ -12,37 +12,55 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { ArrowLeft, Save } from "lucide-react"
-import { getPecaById, updatePeca } from "@/lib/api-service"
+import { getPecaById, updatePeca, fixEncoding, getFornecedores } from "@/lib/api-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface PecaFormData {
-  nome: string
-  descricao: string
-  preco: number
-  quantidade: number
-  categoria: string
+  nome_do_produto: string
+  descricao_do_produto: string
+  categoria_do_produto: string
+  marca_do_produto: string
+  quantidade_estoque: number
+  preco_custo: number
+  preco_venda: number
+  fornecedor: {
+    id_fornecedor: number
+  } | null
+}
+
+interface Fornecedor {
+  id_fornecedor: number
+  nome_fornecedor: string
 }
 
 export default function EditarPecaPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()
   const [formData, setFormData] = useState<PecaFormData>({
-    nome: "",
-    descricao: "",
-    preco: 0,
-    quantidade: 0,
-    categoria: "",
+    nome_do_produto: "",
+    descricao_do_produto: "",
+    categoria_do_produto: "",
+    marca_do_produto: "",
+    quantidade_estoque: 0,
+    preco_custo: 0,
+    preco_venda: 0,
+    fornecedor: null,
   })
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
-    const fetchPeca = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getPecaById(Number.parseInt(params.id))
-        setFormData(data)
+        const [pecaData, fornecedoresData] = await Promise.all([
+          getPecaById(Number.parseInt(params.id)),
+          getFornecedores(),
+        ])
+        setFormData(pecaData)
+        setFornecedores(fornecedoresData)
       } catch (error) {
-        console.error("Error fetching peca:", error)
+        console.error("Error fetching data:", error)
         toast({
           title: "Erro",
           description: "Não foi possível carregar os dados da peça",
@@ -54,7 +72,7 @@ export default function EditarPecaPage({ params }: { params: { id: string } }) {
       }
     }
 
-    fetchPeca()
+    fetchData()
   }, [params.id, router, toast])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -67,8 +85,19 @@ export default function EditarPecaPage({ params }: { params: { id: string } }) {
     setFormData((prev) => ({ ...prev, [name]: Number.parseFloat(value) || 0 }))
   }
 
-  const handleSelectChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, categoria: value }))
+  const handleSelectChange = (field: string, value: string) => {
+    if (field === "fornecedor") {
+      if (value === "none") {
+        setFormData((prev) => ({ ...prev, fornecedor: null }))
+      } else {
+        setFormData((prev) => ({
+          ...prev,
+          fornecedor: { id_fornecedor: Number.parseInt(value) },
+        }))
+      }
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }))
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,54 +150,105 @@ export default function EditarPecaPage({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="nome">Nome</Label>
-              <Input id="nome" name="nome" value={formData.nome} onChange={handleChange} required />
+              <Label htmlFor="nome_do_produto">Nome</Label>
+              <Input
+                id="nome_do_produto"
+                name="nome_do_produto"
+                value={formData.nome_do_produto}
+                onChange={handleChange}
+                required
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="descricao">Descrição</Label>
-              <Textarea id="descricao" name="descricao" value={formData.descricao} onChange={handleChange} rows={3} />
+              <Label htmlFor="descricao_do_produto">Descrição</Label>
+              <Textarea
+                id="descricao_do_produto"
+                name="descricao_do_produto"
+                value={formData.descricao_do_produto}
+                onChange={handleChange}
+                rows={3}
+              />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="categoria_do_produto">Categoria</Label>
+                <Input
+                  id="categoria_do_produto"
+                  name="categoria_do_produto"
+                  value={formData.categoria_do_produto}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="marca_do_produto">Marca</Label>
+                <Input
+                  id="marca_do_produto"
+                  name="marca_do_produto"
+                  value={formData.marca_do_produto}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="categoria">Categoria</Label>
-                <Select value={formData.categoria} onValueChange={handleSelectChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione uma categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Eletrônica">Eletrônica</SelectItem>
-                    <SelectItem value="Mecânica">Mecânica</SelectItem>
-                    <SelectItem value="Elétrica">Elétrica</SelectItem>
-                    <SelectItem value="Hidráulica">Hidráulica</SelectItem>
-                    <SelectItem value="Estrutural">Estrutural</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="preco">Preço (R$)</Label>
+                <Label htmlFor="preco_custo">Preço de Custo (R$)</Label>
                 <Input
-                  id="preco"
-                  name="preco"
+                  id="preco_custo"
+                  name="preco_custo"
                   type="number"
                   step="0.01"
                   min="0"
-                  value={formData.preco}
+                  value={formData.preco_custo}
                   onChange={handleNumberChange}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="quantidade">Quantidade</Label>
+                <Label htmlFor="preco_venda">Preço de Venda (R$)</Label>
                 <Input
-                  id="quantidade"
-                  name="quantidade"
+                  id="preco_venda"
+                  name="preco_venda"
                   type="number"
+                  step="0.01"
                   min="0"
-                  value={formData.quantidade}
+                  value={formData.preco_venda}
                   onChange={handleNumberChange}
                   required
                 />
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="quantidade_estoque">Quantidade em Estoque</Label>
+                <Input
+                  id="quantidade_estoque"
+                  name="quantidade_estoque"
+                  type="number"
+                  min="0"
+                  value={formData.quantidade_estoque}
+                  onChange={handleNumberChange}
+                  required
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="fornecedor">Fornecedor</Label>
+              <Select
+                value={formData.fornecedor ? String(formData.fornecedor.id_fornecedor) : "none"}
+                onValueChange={(value) => handleSelectChange("fornecedor", value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um fornecedor" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Nenhum</SelectItem>
+                  {fornecedores.map((fornecedor) => (
+                    <SelectItem key={fornecedor.id_fornecedor} value={String(fornecedor.id_fornecedor)}>
+                      {fixEncoding(fornecedor.nome_fornecedor)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">

@@ -18,18 +18,15 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { Plus, Search, Edit, Trash2 } from "lucide-react"
-import { getFornecedores, deleteFornecedor } from "@/lib/api-service"
+import { getFornecedores, deleteFornecedor, fixEncoding } from "@/lib/api-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface Fornecedor {
-  id: number
-  nome: string
-  cnpj: string
-  email: string
-  telefone: string
-  endereco: string
-  cidade: string
-  estado: string
+  id_fornecedor: number
+  nome_fornecedor: string
+  cpnj_fornecedor: string
+  telefone_fornecedor: string
+  email_fornecedor: string
 }
 
 export default function FornecedoresPage() {
@@ -48,11 +45,10 @@ export default function FornecedoresPage() {
     if (searchTerm) {
       const filtered = fornecedores.filter(
         (fornecedor) =>
-          fornecedor.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fornecedor.cnpj.includes(searchTerm) ||
-          fornecedor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fornecedor.cidade.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fornecedor.estado.toLowerCase().includes(searchTerm.toLowerCase()),
+          fixEncoding(fornecedor.nome_fornecedor).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fornecedor.cpnj_fornecedor.includes(searchTerm) ||
+          fornecedor.email_fornecedor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fornecedor.telefone_fornecedor.includes(searchTerm),
       )
       setFilteredFornecedores(filtered)
     } else {
@@ -81,7 +77,7 @@ export default function FornecedoresPage() {
     setDeletingId(id)
     try {
       await deleteFornecedor(id)
-      setFornecedores((prev) => prev.filter((fornecedor) => fornecedor.id !== id))
+      setFornecedores((prev) => prev.filter((fornecedor) => fornecedor.id_fornecedor !== id))
       toast({
         title: "Sucesso",
         description: "Fornecedor deletado com sucesso",
@@ -147,21 +143,19 @@ export default function FornecedoresPage() {
                     <TableHead>CNPJ</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Telefone</TableHead>
-                    <TableHead>Cidade/Estado</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredFornecedores.map((fornecedor) => (
-                    <TableRow key={fornecedor.id}>
-                      <TableCell className="font-medium">{fornecedor.nome}</TableCell>
-                      <TableCell>{fornecedor.cnpj}</TableCell>
-                      <TableCell>{fornecedor.email}</TableCell>
-                      <TableCell>{fornecedor.telefone}</TableCell>
-                      <TableCell>{`${fornecedor.cidade}/${fornecedor.estado}`}</TableCell>
+                    <TableRow key={fornecedor.id_fornecedor}>
+                      <TableCell className="font-medium">{fixEncoding(fornecedor.nome_fornecedor)}</TableCell>
+                      <TableCell>{fornecedor.cpnj_fornecedor}</TableCell>
+                      <TableCell>{fornecedor.email_fornecedor}</TableCell>
+                      <TableCell>{fornecedor.telefone_fornecedor}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Link href={`/dashboard/fornecedores/${fornecedor.id}`}>
+                          <Link href={`/dashboard/fornecedores/${fornecedor.id_fornecedor}`}>
                             <Button variant="outline" size="icon">
                               <Edit className="h-4 w-4" />
                               <span className="sr-only">Editar</span>
@@ -178,17 +172,17 @@ export default function FornecedoresPage() {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir o fornecedor "{fornecedor.nome}"? Esta ação não pode
-                                  ser desfeita.
+                                  Tem certeza que deseja excluir o fornecedor "{fixEncoding(fornecedor.nome_fornecedor)}
+                                  "? Esta ação não pode ser desfeita.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDelete(fornecedor.id)}
-                                  disabled={deletingId === fornecedor.id}
+                                  onClick={() => handleDelete(fornecedor.id_fornecedor)}
+                                  disabled={deletingId === fornecedor.id_fornecedor}
                                 >
-                                  {deletingId === fornecedor.id ? "Excluindo..." : "Excluir"}
+                                  {deletingId === fornecedor.id_fornecedor ? "Excluindo..." : "Excluir"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>

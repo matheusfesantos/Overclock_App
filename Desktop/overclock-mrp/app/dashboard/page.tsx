@@ -4,39 +4,50 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, LineChart, PieChart } from "@/components/charts"
-import { getStats } from "@/lib/api-service"
+import { getPecas, getFornecedores, fixEncoding } from "@/lib/api-service"
 
-interface Stats {
-  totalPecas: number
-  totalFornecedores: number
-  pecasPorCategoria: Record<string, number>
-  fornecedoresPorEstado: Record<string, number>
+interface Peca {
+  id_peca: number
+  nome_do_produto: string
+  categoria_do_produto: string
+  quantidade_estoque: number
+}
+
+interface Fornecedor {
+  id_fornecedor: number
+  nome_fornecedor: string
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<Stats>({
-    totalPecas: 0,
-    totalFornecedores: 0,
-    pecasPorCategoria: {},
-    fornecedoresPorEstado: {},
-  })
+  const [pecas, setPecas] = useState<Peca[]>([])
+  const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [loading, setLoading] = useState(true)
+  const [categorias, setCategorias] = useState<Record<string, number>>({})
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        // In a real implementation, this would fetch actual stats from the API
-        // For now, we'll use mock data
-        const data = await getStats()
-        setStats(data)
+        const [pecasData, fornecedoresData] = await Promise.all([getPecas(), getFornecedores()])
+
+        setPecas(pecasData)
+        setFornecedores(fornecedoresData)
+
+        // Process categories for chart
+        const categoriasCount: Record<string, number> = {}
+        pecasData.forEach((peca) => {
+          const categoria = fixEncoding(peca.categoria_do_produto)
+          categoriasCount[categoria] = (categoriasCount[categoria] || 0) + 1
+        })
+
+        setCategorias(categoriasCount)
       } catch (error) {
-        console.error("Error fetching stats:", error)
+        console.error("Error fetching dashboard data:", error)
       } finally {
         setLoading(false)
       }
     }
 
-    fetchStats()
+    fetchData()
   }, [])
 
   if (loading) {
@@ -46,6 +57,9 @@ export default function DashboardPage() {
       </div>
     )
   }
+
+  // Calculate low stock items (less than 10 in stock)
+  const lowStockItems = pecas.filter((peca) => peca.quantidade_estoque < 10).length
 
   return (
     <div className="space-y-6">
@@ -57,7 +71,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">Total de Peças</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalPecas}</div>
+            <div className="text-2xl font-bold">{pecas.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -65,7 +79,7 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">Total de Fornecedores</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalFornecedores}</div>
+            <div className="text-2xl font-bold">{fornecedores.length}</div>
           </CardContent>
         </Card>
         <Card>
@@ -73,15 +87,15 @@ export default function DashboardPage() {
             <CardTitle className="text-sm font-medium">Peças em Estoque Baixo</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
+            <div className="text-2xl font-bold">{lowStockItems}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Pedidos Pendentes</CardTitle>
+            <CardTitle className="text-sm font-medium">Categorias de Produtos</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5</div>
+            <div className="text-2xl font-bold">{Object.keys(categorias).length}</div>
           </CardContent>
         </Card>
       </div>
@@ -117,8 +131,8 @@ export default function DashboardPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card className="col-span-2">
               <CardHeader>
-                <CardTitle>Fornecedores por Estado</CardTitle>
-                <CardDescription>Distribuição geográfica dos fornecedores</CardDescription>
+                <CardTitle>Fornecedores</CardTitle>
+                <CardDescription>Distribuição de peças por fornecedor</CardDescription>
               </CardHeader>
               <CardContent className="h-80">
                 <BarChart />
@@ -126,23 +140,20 @@ export default function DashboardPage() {
             </Card>
             <Card>
               <CardHeader>
-                <CardTitle>Top Fornecedores</CardTitle>
-                <CardDescription>Fornecedores com mais peças cadastradas</CardDescription>
+                <CardTitle>Top Peças</CardTitle>
+                <CardDescription>Peças com maior quantidade em estoque</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[
-                    { name: "Fornecedor A", count: 42 },
-                    { name: "Fornecedor B", count: 38 },
-                    { name: "Fornecedor C", count: 27 },
-                    { name: "Fornecedor D", count: 21 },
-                    { name: "Fornecedor E", count: 15 },
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-center justify-between">
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-sm text-gray-500">{item.count} peças</div>
-                    </div>
-                  ))}
+                  {pecas
+                    .sort((a, b) => b.quantidade_estoque - a.quantidade_estoque)
+                    .slice(0, 5)
+                    .map((peca) => (
+                      <div key={peca.id_peca} className="flex items-center justify-between">
+                        <div className="font-medium">{fixEncoding(peca.nome_do_produto)}</div>
+                        <div className="text-sm text-gray-500">{peca.quantidade_estoque} unidades</div>
+                      </div>
+                    ))}
                 </div>
               </CardContent>
             </Card>

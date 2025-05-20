@@ -30,7 +30,13 @@ const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
     throw new Error(data.message || "Erro na requisição")
   }
 
-  return data.data
+  // If data is an array, return it directly
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  // Otherwise, return data.data if it exists, or data itself
+  return data.data || data
 }
 
 // Mock function for stats (since it's not in the API)
@@ -101,4 +107,79 @@ export const updateFornecedor = async (id: number, data: any) => {
 
 export const deleteFornecedor = async (id: number) => {
   return apiRequest(`/fornecedores/${id}`, "DELETE")
+}
+
+// Helper function to fix encoding issues in text
+export const fixEncoding = (text: string): string => {
+  if (!text) return ""
+
+  // Replace common encoding issues
+  return text
+    .replace(/Æ/g, "ã")
+    .replace(/¡/g, "í")
+    .replace(/¢/g, "ó")
+    .replace(/£/g, "ú")
+    .replace(/‡Æ/g, "çã")
+    .replace(/‡/g, "ç")
+    .replace(/ƒ/g, "â")
+    .replace(/¤/g, "ê")
+    .replace(/¥/g, "é")
+    .replace(/¦/g, "ê")
+    .replace(/§/g, "ç")
+    .replace(/¨/g, "è")
+    .replace(/©/g, "é")
+    .replace(/ª/g, "ê")
+    .replace(/«/g, "ë")
+    .replace(/¬/g, "ì")
+    .replace(/­/g, "í")
+    .replace(/®/g, "î")
+    .replace(/¯/g, "ï")
+    .replace(/°/g, "ð")
+    .replace(/±/g, "ñ")
+    .replace(/²/g, "ò")
+    .replace(/³/g, "ó")
+    .replace(/´/g, "ô")
+    .replace(/µ/g, "õ")
+    .replace(/¶/g, "ö")
+    .replace(/·/g, "÷")
+    .replace(/¸/g, "ø")
+    .replace(/¹/g, "ù")
+    .replace(/º/g, "ú")
+    .replace(/»/g, "û")
+    .replace(/¼/g, "ü")
+    .replace(/½/g, "ý")
+    .replace(/¾/g, "þ")
+    .replace(/¿/g, "ÿ")
+    .replace(/ä/g, "á")
+    .replace(/Ä/g, "Á")
+    .replace(/ö/g, "ó")
+    .replace(/Ö/g, "Ó")
+    .replace(/ü/g, "ú")
+    .replace(/Ü/g, "Ú")
+    .replace(/ß/g, "ß")
+    .replace(/‚/g, "á")
+    .replace(/„/g, "ä")
+    .replace(/…/g, "à")
+    .replace(/†/g, "æ")
+    .replace(/‡/g, "ç")
+    .replace(/ˆ/g, "è")
+    .replace(/‰/g, "é")
+    .replace(/Š/g, "ê")
+    .replace(/‹/g, "ë")
+    .replace(/Œ/g, "ì")
+    .replace(/Ž/g, "î")
+    .replace(/'/g, "ñ")
+    .replace(/'/g, "ò")
+    .replace(/"/g, "ó")
+    .replace(/"/g, "ô")
+    .replace(/•/g, "õ")
+    .replace(/–/g, "ö")
+    .replace(/—/g, "÷")
+    .replace(/˜/g, "ø")
+    .replace(/™/g, "ù")
+    .replace(/š/g, "ú")
+    .replace(/›/g, "û")
+    .replace(/œ/g, "ü")
+    .replace(/ž/g, "þ")
+    .replace(/Ÿ/g, "ÿ")
 }
