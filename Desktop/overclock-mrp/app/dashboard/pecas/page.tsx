@@ -1,0 +1,208 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Plus, Search, Edit, Trash2 } from "lucide-react"
+import { getPecas, deletePeca } from "@/lib/api-service"
+import { useToast } from "@/hooks/use-toast"
+
+interface Peca {
+  id: number
+  nome: string
+  descricao: string
+  preco: number
+  quantidade: number
+  categoria: string
+}
+
+export default function PecasPage() {
+  const [pecas, setPecas] = useState<Peca[]>([])
+  const [filteredPecas, setFilteredPecas] = useState<Peca[]>([])
+  const [searchTerm, setSearchTerm] = useState("")
+  const [loading, setLoading] = useState(true)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
+  const { toast } = useToast()
+
+  useEffect(() => {
+    fetchPecas()
+  }, [])
+
+  useEffect(() => {
+    if (searchTerm) {
+      const filtered = pecas.filter(
+        (peca) =>
+          peca.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          peca.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          peca.categoria.toLowerCase().includes(searchTerm.toLowerCase()),
+      )
+      setFilteredPecas(filtered)
+    } else {
+      setFilteredPecas(pecas)
+    }
+  }, [searchTerm, pecas])
+
+  const fetchPecas = async () => {
+    try {
+      const data = await getPecas()
+      setPecas(data)
+      setFilteredPecas(data)
+    } catch (error) {
+      console.error("Error fetching pecas:", error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as peças",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDelete = async (id: number) => {
+    setDeletingId(id)
+    try {
+      await deletePeca(id)
+      setPecas((prev) => prev.filter((peca) => peca.id !== id))
+      toast({
+        title: "Sucesso",
+        description: "Peça deletada com sucesso",
+      })
+    } catch (error) {
+      console.error("Error deleting peca:", error)
+      toast({
+        title: "Erro",
+        description: "Não foi possível deletar a peça",
+        variant: "destructive",
+      })
+    } finally {
+      setDeletingId(null)
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Peças</h1>
+        <Link href="/dashboard/pecas/nova">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            Nova Peça
+          </Button>
+        </Link>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Gerenciar Peças</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
+              <Input
+                placeholder="Buscar peças..."
+                className="pl-8"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="flex h-40 items-center justify-center">
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
+            </div>
+          ) : filteredPecas.length === 0 ? (
+            <div className="flex h-40 flex-col items-center justify-center text-center">
+              <p className="text-lg font-medium">Nenhuma peça encontrada</p>
+              <p className="text-sm text-gray-500">
+                {searchTerm ? "Tente ajustar sua busca" : "Clique em 'Nova Peça' para adicionar"}
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Nome</TableHead>
+                    <TableHead>Descrição</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="text-right">Preço</TableHead>
+                    <TableHead className="text-right">Quantidade</TableHead>
+                    <TableHead className="text-right">Ações</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredPecas.map((peca) => (
+                    <TableRow key={peca.id}>
+                      <TableCell className="font-medium">{peca.nome}</TableCell>
+                      <TableCell>{peca.descricao}</TableCell>
+                      <TableCell>{peca.categoria}</TableCell>
+                      <TableCell className="text-right">
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(peca.preco)}
+                      </TableCell>
+                      <TableCell className="text-right">{peca.quantidade}</TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Link href={`/dashboard/pecas/${peca.id}`}>
+                            <Button variant="outline" size="icon">
+                              <Edit className="h-4 w-4" />
+                              <span className="sr-only">Editar</span>
+                            </Button>
+                          </Link>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="outline" size="icon">
+                                <Trash2 className="h-4 w-4" />
+                                <span className="sr-only">Excluir</span>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Tem certeza que deseja excluir a peça "{peca.nome}"? Esta ação não pode ser desfeita.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDelete(peca.id)}
+                                  disabled={deletingId === peca.id}
+                                >
+                                  {deletingId === peca.id ? "Excluindo..." : "Excluir"}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
