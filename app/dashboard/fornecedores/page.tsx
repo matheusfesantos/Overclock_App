@@ -29,6 +29,7 @@ interface Fornecedor {
 }
 
 export default function FornecedoresPage() {
+  // Estado
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [filteredFornecedores, setFilteredFornecedores] = useState<Fornecedor[]>([])
   const [searchTerm, setSearchTerm] = useState("")
@@ -36,10 +37,12 @@ export default function FornecedoresPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const { toast } = useToast()
 
+  // Carregar dados
   useEffect(() => {
     fetchFornecedores()
   }, [])
 
+  // Filtrar fornecedores quando o termo de busca mudar
   useEffect(() => {
     if (searchTerm) {
       const filtered = fornecedores.filter(
@@ -55,13 +58,14 @@ export default function FornecedoresPage() {
     }
   }, [searchTerm, fornecedores])
 
+  // Buscar fornecedores da API
   const fetchFornecedores = async () => {
     try {
       const data = await getFornecedores()
       setFornecedores(data)
       setFilteredFornecedores(data)
     } catch (error) {
-      console.error("Error fetching fornecedores:", error)
+      console.error("Erro ao buscar fornecedores:", error)
       toast({
         title: "Erro",
         description: "Não foi possível carregar os fornecedores",
@@ -72,6 +76,7 @@ export default function FornecedoresPage() {
     }
   }
 
+  // Excluir fornecedor
   const handleDelete = async (id: number) => {
     setDeletingId(id)
     try {
@@ -82,7 +87,7 @@ export default function FornecedoresPage() {
         description: "Fornecedor deletado com sucesso",
       })
     } catch (error) {
-      console.error("Error deleting fornecedor:", error)
+      console.error("Erro ao deletar fornecedor:", error)
       toast({
         title: "Erro",
         description: "Não foi possível deletar o fornecedor",
@@ -104,6 +109,7 @@ export default function FornecedoresPage() {
           <CardTitle>Visualizar Fornecedores</CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Barra de busca */}
           <div className="mb-4 flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -116,6 +122,7 @@ export default function FornecedoresPage() {
             </div>
           </div>
 
+          {/* Estado de carregamento */}
           {loading ? (
             <div className="flex h-40 items-center justify-center">
               <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
@@ -123,11 +130,12 @@ export default function FornecedoresPage() {
           ) : filteredFornecedores.length === 0 ? (
             <div className="flex h-40 flex-col items-center justify-center text-center">
               <p className="text-lg font-medium">Nenhum fornecedor encontrado</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {searchTerm ? "Tente ajustar sua busca" : "Não há fornecedores cadastrados no sistema"}
               </p>
             </div>
           ) : (
+            /* Tabela de fornecedores */
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>

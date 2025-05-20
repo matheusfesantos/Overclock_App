@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -14,8 +15,10 @@ import {
 import { Bell, User, Settings, LogOut } from "lucide-react"
 import { Sidebar } from "@/components/sidebar"
 import { useUserInfo, logout } from "@/lib/auth-service"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export function Header() {
+  const router = useRouter()
   const { userInfo } = useUserInfo()
   const [notifications] = useState(3)
 
@@ -24,12 +27,21 @@ export function Header() {
     window.location.href = "/login"
   }
 
+  const navigateToProfile = () => {
+    router.push("/dashboard/perfil")
+  }
+
+  const navigateToSettings = () => {
+    router.push("/dashboard/configuracoes")
+  }
+
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-white px-4 md:px-6">
+    <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4 md:px-6">
       <div className="md:hidden">
         <Sidebar />
       </div>
       <div className="ml-auto flex items-center gap-4">
+        <ThemeToggle />
         <Button variant="outline" size="icon" className="relative">
           <Bell className="h-5 w-5" />
           {notifications > 0 && (
@@ -60,15 +72,15 @@ export function Header() {
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
                 <p className="text-sm font-medium leading-none">{userInfo?.nome || "Usuário"}</p>
-                <p className="text-xs leading-none text-gray-500">{userInfo?.email || "usuario@email.com"}</p>
+                <p className="text-xs leading-none text-muted-foreground">{userInfo?.email || "usuario@email.com"}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={navigateToProfile}>
               <User className="mr-2 h-4 w-4" />
               <span>Perfil</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={navigateToSettings}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Configurações</span>
             </DropdownMenuItem>

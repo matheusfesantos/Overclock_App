@@ -70,7 +70,7 @@ const clearAuthData = () => {
 // Login user
 export const loginUser = async (username: string, password: string): Promise<void> => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -79,7 +79,8 @@ export const loginUser = async (username: string, password: string): Promise<voi
     })
 
     if (!response.ok) {
-      throw new Error("Falha na autenticação. Verifique suas credenciais.")
+      const errorData = await response.json()
+      throw new Error(errorData.message || "Falha na autenticação. Verifique suas credenciais.")
     }
 
     const data = await response.json()
@@ -108,7 +109,7 @@ export const loginUser = async (username: string, password: string): Promise<voi
 // Register user
 export const registerUser = async (userData: RegisterData): Promise<void> => {
   try {
-    const response = await fetch(`${API_URL}/api/auth/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
