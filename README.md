@@ -1,10 +1,6 @@
 # Overclock MRP System
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/username/overclock-mrp/main/public/logo.svg" alt="Overclock MRP Logo" width="200" height="200">
-</p>
-
-<p align="center">
   <a href="#"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version 1.0.0"></a>
   <a href="#"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License MIT"></a>
   <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
