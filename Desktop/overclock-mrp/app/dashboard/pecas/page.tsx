@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -17,17 +16,26 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { Plus, Search, Edit, Trash2 } from "lucide-react"
-import { getPecas, deletePeca } from "@/lib/api-service"
+import { Search, Trash2 } from "lucide-react"
+import { getPecas, deletePeca, fixEncoding } from "@/lib/api-service"
 import { useToast } from "@/hooks/use-toast"
 
 interface Peca {
-  id: number
-  nome: string
-  descricao: string
-  preco: number
-  quantidade: number
-  categoria: string
+  id_peca: number
+  nome_do_produto: string
+  descricao_do_produto: string
+  categoria_do_produto: string
+  marca_do_produto: string
+  quantidade_estoque: number
+  preco_custo: number
+  preco_venda: number
+  fornecedor: {
+    id_fornecedor: number
+    nome_fornecedor: string
+    cpnj_fornecedor: string
+    telefone_fornecedor: string
+    email_fornecedor: string
+  } | null
 }
 
 export default function PecasPage() {
@@ -46,9 +54,10 @@ export default function PecasPage() {
     if (searchTerm) {
       const filtered = pecas.filter(
         (peca) =>
-          peca.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          peca.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          peca.categoria.toLowerCase().includes(searchTerm.toLowerCase()),
+          fixEncoding(peca.nome_do_produto).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fixEncoding(peca.descricao_do_produto).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fixEncoding(peca.categoria_do_produto).toLowerCase().includes(searchTerm.toLowerCase()) ||
+          fixEncoding(peca.marca_do_produto).toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredPecas(filtered)
     } else {
@@ -77,7 +86,7 @@ export default function PecasPage() {
     setDeletingId(id)
     try {
       await deletePeca(id)
-      setPecas((prev) => prev.filter((peca) => peca.id !== id))
+      setPecas((prev) => prev.filter((peca) => peca.id_peca !== id))
       toast({
         title: "Sucesso",
         description: "Peça deletada com sucesso",
@@ -98,17 +107,11 @@ export default function PecasPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Peças</h1>
-        <Link href="/dashboard/pecas/nova">
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Nova Peça
-          </Button>
-        </Link>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Gerenciar Peças</CardTitle>
+          <CardTitle>Visualizar Peças</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-4 flex items-center gap-2">
@@ -131,7 +134,7 @@ export default function PecasPage() {
             <div className="flex h-40 flex-col items-center justify-center text-center">
               <p className="text-lg font-medium">Nenhuma peça encontrada</p>
               <p className="text-sm text-gray-500">
-                {searchTerm ? "Tente ajustar sua busca" : "Clique em 'Nova Peça' para adicionar"}
+                {searchTerm ? "Tente ajustar sua busca" : "Não há peças cadastradas no sistema"}
               </p>
             </div>
           ) : (
@@ -140,34 +143,35 @@ export default function PecasPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nome</TableHead>
-                    <TableHead>Descrição</TableHead>
+                    <TableHead>Marca</TableHead>
                     <TableHead>Categoria</TableHead>
-                    <TableHead className="text-right">Preço</TableHead>
-                    <TableHead className="text-right">Quantidade</TableHead>
+                    <TableHead className="text-right">Preço Custo</TableHead>
+                    <TableHead className="text-right">Preço Venda</TableHead>
+                    <TableHead className="text-right">Estoque</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredPecas.map((peca) => (
-                    <TableRow key={peca.id}>
-                      <TableCell className="font-medium">{peca.nome}</TableCell>
-                      <TableCell>{peca.descricao}</TableCell>
-                      <TableCell>{peca.categoria}</TableCell>
+                    <TableRow key={peca.id_peca}>
+                      <TableCell className="font-medium">{fixEncoding(peca.nome_do_produto)}</TableCell>
+                      <TableCell>{fixEncoding(peca.marca_do_produto)}</TableCell>
+                      <TableCell>{fixEncoding(peca.categoria_do_produto)}</TableCell>
                       <TableCell className="text-right">
                         {new Intl.NumberFormat("pt-BR", {
                           style: "currency",
                           currency: "BRL",
-                        }).format(peca.preco)}
+                        }).format(peca.preco_custo)}
                       </TableCell>
-                      <TableCell className="text-right">{peca.quantidade}</TableCell>
+                      <TableCell className="text-right">
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
+                        }).format(peca.preco_venda)}
+                      </TableCell>
+                      <TableCell className="text-right">{peca.quantidade_estoque}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Link href={`/dashboard/pecas/${peca.id}`}>
-                            <Button variant="outline" size="icon">
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">Editar</span>
-                            </Button>
-                          </Link>
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="outline" size="icon">
@@ -179,16 +183,17 @@ export default function PecasPage() {
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  Tem certeza que deseja excluir a peça "{peca.nome}"? Esta ação não pode ser desfeita.
+                                  Tem certeza que deseja excluir a peça "{fixEncoding(peca.nome_do_produto)}"? Esta ação
+                                  não pode ser desfeita.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
                                 <AlertDialogAction
-                                  onClick={() => handleDelete(peca.id)}
-                                  disabled={deletingId === peca.id}
+                                  onClick={() => handleDelete(peca.id_peca)}
+                                  disabled={deletingId === peca.id_peca}
                                 >
-                                  {deletingId === peca.id ? "Excluindo..." : "Excluir"}
+                                  {deletingId === peca.id_peca ? "Excluindo..." : "Excluir"}
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>

@@ -78,15 +78,27 @@ export const loginUser = async (username: string, password: string): Promise<voi
       body: JSON.stringify({ username, senha: password }),
     })
 
-    const data: AuthResponse = await response.json()
+    if (!response.ok) {
+      throw new Error("Falha na autenticação. Verifique suas credenciais.")
+    }
 
-    if (data.status === "success" && data.data) {
-      setToken(data.data.token)
-      setUserInfo(data.data.user)
+    const data = await response.json()
+
+    if (data.token) {
+      setToken(data.token)
+      // Mock user info since the API doesn't return it
+      const userInfo: UserInfo = {
+        id: 1,
+        username,
+        nome: "Usuário Logado",
+        email: "usuario@email.com",
+        cpf: "12345678900",
+      }
+      setUserInfo(userInfo)
       return
     }
 
-    throw new Error(data.message || "Falha na autenticação")
+    throw new Error("Falha na autenticação. Verifique suas credenciais.")
   } catch (error) {
     console.error("Login error:", error)
     throw error
@@ -104,13 +116,11 @@ export const registerUser = async (userData: RegisterData): Promise<void> => {
       body: JSON.stringify(userData),
     })
 
-    const data: AuthResponse = await response.json()
-
-    if (data.status === "success") {
-      return
+    if (!response.ok) {
+      throw new Error("Falha no registro. Verifique os dados e tente novamente.")
     }
 
-    throw new Error(data.message || "Falha no registro")
+    return
   } catch (error) {
     console.error("Register error:", error)
     throw error
