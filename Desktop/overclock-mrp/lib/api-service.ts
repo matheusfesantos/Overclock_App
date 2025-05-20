@@ -75,12 +75,15 @@ export const getPecaById = async (id: number) => {
   return apiRequest(`/pecas/${id}`)
 }
 
+// Nota: POST apenas para login, estas funções estão desabilitadas
 export const createPeca = async (data: any) => {
-  return apiRequest("/pecas", "POST", data)
+  console.warn("Operação POST não suportada pela API")
+  throw new Error("Operação não suportada")
 }
 
 export const updatePeca = async (id: number, data: any) => {
-  return apiRequest(`/pecas/${id}`, "PUT", data)
+  console.warn("Operação PUT não suportada pela API")
+  throw new Error("Operação não suportada")
 }
 
 export const deletePeca = async (id: number) => {
@@ -97,12 +100,15 @@ export const getFornecedorById = async (id: number) => {
   return apiRequest(`/fornecedores/${id}`)
 }
 
+// Nota: POST apenas para login, estas funções estão desabilitadas
 export const createFornecedor = async (data: any) => {
-  return apiRequest("/fornecedores", "POST", data)
+  console.warn("Operação POST não suportada pela API")
+  throw new Error("Operação não suportada")
 }
 
 export const updateFornecedor = async (id: number, data: any) => {
-  return apiRequest(`/fornecedores/${id}`, "PUT", data)
+  console.warn("Operação PUT não suportada pela API")
+  throw new Error("Operação não suportada")
 }
 
 export const deleteFornecedor = async (id: number) => {
