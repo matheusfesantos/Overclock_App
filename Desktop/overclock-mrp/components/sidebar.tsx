@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Package, Truck, Settings, Menu, LogOut } from "lucide-react"
+import { LayoutDashboard, Package, Truck, Users, Settings, Menu, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
 import { logout } from "@/lib/auth-service"
@@ -38,6 +38,12 @@ export function Sidebar({ className }: SidebarProps) {
       icon: Truck,
       href: "/dashboard/fornecedores",
       active: pathname.includes("/dashboard/fornecedores"),
+    },
+    {
+      label: "Usuários",
+      icon: Users,
+      href: "/dashboard/usuarios",
+      active: pathname.includes("/dashboard/usuarios"),
     },
     {
       label: "Configurações",

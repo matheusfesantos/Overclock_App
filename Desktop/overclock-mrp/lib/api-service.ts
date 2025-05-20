@@ -23,7 +23,7 @@ const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
     config.body = JSON.stringify(body)
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, config)
+  const response = await fetch(`${API_URL}/${endpoint}`, config)
   const data = await response.json()
 
   if (data.status === "error") {
@@ -68,11 +68,11 @@ export const getStats = async () => {
 // Peças API
 
 export const getPecas = async () => {
-  return apiRequest("/pecas")
+  return apiRequest("api/pecas")
 }
 
 export const getPecaById = async (id: number) => {
-  return apiRequest(`/pecas/${id}`)
+  return apiRequest(`api/pecas/${id}`)
 }
 
 // Nota: POST apenas para login, estas funções estão desabilitadas
@@ -87,17 +87,17 @@ export const updatePeca = async (id: number, data: any) => {
 }
 
 export const deletePeca = async (id: number) => {
-  return apiRequest(`/pecas/${id}`, "DELETE")
+  return apiRequest(`api/pecas/${id}`, "DELETE")
 }
 
 // Fornecedores API
 
 export const getFornecedores = async () => {
-  return apiRequest("/fornecedores")
+  return apiRequest("api/fornecedores")
 }
 
 export const getFornecedorById = async (id: number) => {
-  return apiRequest(`/fornecedores/${id}`)
+  return apiRequest(`api/fornecedores/${id}`)
 }
 
 // Nota: POST apenas para login, estas funções estão desabilitadas
@@ -112,7 +112,12 @@ export const updateFornecedor = async (id: number, data: any) => {
 }
 
 export const deleteFornecedor = async (id: number) => {
-  return apiRequest(`/fornecedores/${id}`, "DELETE")
+  return apiRequest(`api/fornecedores/${id}`, "DELETE")
+}
+
+// Usuários API
+export const getUsuarios = async () => {
+  return apiRequest("api/usuarios")
 }
 
 // Helper function to fix encoding issues in text
