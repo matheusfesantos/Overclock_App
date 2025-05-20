@@ -183,4 +183,3 @@ export const fixEncoding = (text: string): string => {
     .replace(/ž/g, "þ")
     .replace(/Ÿ/g, "ÿ")
 }
-"\
