@@ -8,7 +8,18 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Package, Truck, Users, Settings, Menu, LogOut } from "lucide-react"
+import {
+  LayoutDashboard,
+  Package,
+  Truck,
+  Users,
+  Settings,
+  Menu,
+  LogOut,
+  ShoppingCart,
+  BarChart3,
+  User,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
 import { logout } from "@/lib/auth-service"
@@ -40,10 +51,28 @@ export function Sidebar({ className }: SidebarProps) {
       active: pathname.includes("/dashboard/fornecedores"),
     },
     {
+      label: "Compras",
+      icon: ShoppingCart,
+      href: "/dashboard/compras",
+      active: pathname.includes("/dashboard/compras"),
+    },
+    {
+      label: "Movimentações",
+      icon: BarChart3,
+      href: "/dashboard/movimentacoes",
+      active: pathname.includes("/dashboard/movimentacoes"),
+    },
+    {
       label: "Usuários",
       icon: Users,
       href: "/dashboard/usuarios",
       active: pathname.includes("/dashboard/usuarios"),
+    },
+    {
+      label: "Meu Perfil",
+      icon: User,
+      href: "/dashboard/perfil",
+      active: pathname.includes("/dashboard/perfil"),
     },
     {
       label: "Configurações",
@@ -70,12 +99,7 @@ export function Sidebar({ className }: SidebarProps) {
         <nav className="flex flex-col gap-2">
           {routes.map((route) => (
             <Link key={route.href} href={route.href} onClick={() => setOpen(false)}>
-              <Button
-                variant={route.active ? "default" : "ghost"}
-                className={cn("w-full justify-start", {
-                  "bg-gray-100 text-gray-900": route.active,
-                })}
-              >
+              <Button variant={route.active ? "default" : "ghost"} className={cn("w-full justify-start")}>
                 <route.icon className="mr-2 h-5 w-5" />
                 {route.label}
               </Button>

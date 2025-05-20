@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { registerUser } from "@/lib/auth-service"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -46,7 +47,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Criar Conta</CardTitle>
@@ -129,7 +133,7 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm">
             Já tem uma conta?{" "}
-            <Link href="/login" className="text-blue-600 hover:text-blue-800">
+            <Link href="/login" className="text-primary hover:underline">
               Faça login
             </Link>
           </div>

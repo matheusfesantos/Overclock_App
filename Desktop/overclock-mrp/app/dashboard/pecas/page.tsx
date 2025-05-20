@@ -39,6 +39,7 @@ interface Peca {
 }
 
 export default function PecasPage() {
+  // Estado
   const [pecas, setPecas] = useState<Peca[]>([])
   const [filteredPecas, setFilteredPecas] = useState<Peca[]>([])
   const [searchTerm, setSearchTerm] = useState("")
@@ -46,10 +47,12 @@ export default function PecasPage() {
   const [deletingId, setDeletingId] = useState<number | null>(null)
   const { toast } = useToast()
 
+  // Carregar dados
   useEffect(() => {
     fetchPecas()
   }, [])
 
+  // Filtrar peças quando o termo de busca mudar
   useEffect(() => {
     if (searchTerm) {
       const filtered = pecas.filter(
@@ -65,13 +68,14 @@ export default function PecasPage() {
     }
   }, [searchTerm, pecas])
 
+  // Buscar peças da API
   const fetchPecas = async () => {
     try {
       const data = await getPecas()
       setPecas(data)
       setFilteredPecas(data)
     } catch (error) {
-      console.error("Error fetching pecas:", error)
+      console.error("Erro ao buscar peças:", error)
       toast({
         title: "Erro",
         description: "Não foi possível carregar as peças",
@@ -82,6 +86,7 @@ export default function PecasPage() {
     }
   }
 
+  // Excluir peça
   const handleDelete = async (id: number) => {
     setDeletingId(id)
     try {
@@ -92,7 +97,7 @@ export default function PecasPage() {
         description: "Peça deletada com sucesso",
       })
     } catch (error) {
-      console.error("Error deleting peca:", error)
+      console.error("Erro ao deletar peça:", error)
       toast({
         title: "Erro",
         description: "Não foi possível deletar a peça",
@@ -114,6 +119,7 @@ export default function PecasPage() {
           <CardTitle>Visualizar Peças</CardTitle>
         </CardHeader>
         <CardContent>
+          {/* Barra de busca */}
           <div className="mb-4 flex items-center gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500" />
@@ -126,6 +132,7 @@ export default function PecasPage() {
             </div>
           </div>
 
+          {/* Estado de carregamento */}
           {loading ? (
             <div className="flex h-40 items-center justify-center">
               <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-gray-900"></div>
@@ -133,11 +140,12 @@ export default function PecasPage() {
           ) : filteredPecas.length === 0 ? (
             <div className="flex h-40 flex-col items-center justify-center text-center">
               <p className="text-lg font-medium">Nenhuma peça encontrada</p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {searchTerm ? "Tente ajustar sua busca" : "Não há peças cadastradas no sistema"}
               </p>
             </div>
           ) : (
+            /* Tabela de peças */
             <div className="overflow-x-auto">
               <Table>
                 <TableHeader>

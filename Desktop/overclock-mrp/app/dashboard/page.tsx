@@ -19,11 +19,13 @@ interface Fornecedor {
 }
 
 export default function DashboardPage() {
+  // Estado
   const [pecas, setPecas] = useState<Peca[]>([])
   const [fornecedores, setFornecedores] = useState<Fornecedor[]>([])
   const [loading, setLoading] = useState(true)
   const [categorias, setCategorias] = useState<Record<string, number>>({})
 
+  // Carregar dados
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,7 +34,7 @@ export default function DashboardPage() {
         setPecas(pecasData)
         setFornecedores(fornecedoresData)
 
-        // Process categories for chart
+        // Processar categorias para o gráfico
         const categoriasCount: Record<string, number> = {}
         pecasData.forEach((peca) => {
           const categoria = fixEncoding(peca.categoria_do_produto)
@@ -41,7 +43,7 @@ export default function DashboardPage() {
 
         setCategorias(categoriasCount)
       } catch (error) {
-        console.error("Error fetching dashboard data:", error)
+        console.error("Erro ao carregar dados do dashboard:", error)
       } finally {
         setLoading(false)
       }
@@ -50,6 +52,7 @@ export default function DashboardPage() {
     fetchData()
   }, [])
 
+  // Indicador de carregamento
   if (loading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -58,13 +61,14 @@ export default function DashboardPage() {
     )
   }
 
-  // Calculate low stock items (less than 10 in stock)
+  // Calcular itens com estoque baixo (menos de 10 unidades)
   const lowStockItems = pecas.filter((peca) => peca.quantidade_estoque < 10).length
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Dashboard</h1>
 
+      {/* Cards de resumo */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
@@ -100,11 +104,14 @@ export default function DashboardPage() {
         </Card>
       </div>
 
+      {/* Abas de gráficos */}
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           <TabsTrigger value="analytics">Análises</TabsTrigger>
         </TabsList>
+
+        {/* Aba de visão geral */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card className="col-span-2">
@@ -127,6 +134,8 @@ export default function DashboardPage() {
             </Card>
           </div>
         </TabsContent>
+
+        {/* Aba de análises */}
         <TabsContent value="analytics" className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <Card className="col-span-2">
