@@ -17,7 +17,7 @@ import {
   Menu,
   LogOut,
   ShoppingCart,
-  BarChart3,
+  ShoppingBag,
   User,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -57,10 +57,10 @@ export function Sidebar({ className }: SidebarProps) {
       active: pathname.includes("/dashboard/compras"),
     },
     {
-      label: "Movimentações",
-      icon: BarChart3,
-      href: "/dashboard/movimentacoes",
-      active: pathname.includes("/dashboard/movimentacoes"),
+      label: "Pedidos",
+      icon: ShoppingBag,
+      href: "/dashboard/pedidos",
+      active: pathname.includes("/dashboard/pedidos"),
     },
     {
       label: "Usuários",
@@ -91,7 +91,21 @@ export function Sidebar({ className }: SidebarProps) {
     <div className={cn("flex h-full flex-col", className)}>
       <div className="border-b px-6 py-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Package className="h-6 w-6" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#6DB33F"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
           <span className="text-xl font-bold">Overclock MRP</span>
         </Link>
       </div>

@@ -19,7 +19,7 @@ const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
     headers,
   }
 
-  if (body && (method === "POST" || method === "PUT")) {
+  if (body && (method === "POST" || method === "PUT" || method === "PATCH")) {
     config.body = JSON.stringify(body)
   }
 
@@ -39,34 +39,7 @@ const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
   return data.data || data
 }
 
-// Mock function for stats (since it's not in the API)
-export const getStats = async () => {
-  // This would be replaced with a real API call in production
-  return {
-    totalPecas: 156,
-    totalFornecedores: 42,
-    pecasPorCategoria: {
-      Eletrônica: 35,
-      Mecânica: 25,
-      Elétrica: 20,
-      Hidráulica: 15,
-      Estrutural: 5,
-    },
-    fornecedoresPorEstado: {
-      SP: 42,
-      MG: 28,
-      RJ: 23,
-      PR: 19,
-      SC: 15,
-      RS: 12,
-      BA: 8,
-      PE: 5,
-    },
-  }
-}
-
 // Peças API
-
 export const getPecas = async () => {
   return apiRequest("api/pecas")
 }
@@ -75,40 +48,17 @@ export const getPecaById = async (id: number) => {
   return apiRequest(`api/pecas/${id}`)
 }
 
-// Nota: POST apenas para login, estas funções estão desabilitadas
-export const createPeca = async (data: any) => {
-  console.warn("Operação POST não suportada pela API")
-  throw new Error("Operação não suportada")
-}
-
-export const updatePeca = async (id: number, data: any) => {
-  console.warn("Operação PUT não suportada pela API")
-  throw new Error("Operação não suportada")
-}
-
 export const deletePeca = async (id: number) => {
   return apiRequest(`api/pecas/${id}`, "DELETE")
 }
 
 // Fornecedores API
-
 export const getFornecedores = async () => {
   return apiRequest("api/fornecedores")
 }
 
 export const getFornecedorById = async (id: number) => {
   return apiRequest(`api/fornecedores/${id}`)
-}
-
-// Nota: POST apenas para login, estas funções estão desabilitadas
-export const createFornecedor = async (data: any) => {
-  console.warn("Operação POST não suportada pela API")
-  throw new Error("Operação não suportada")
-}
-
-export const updateFornecedor = async (id: number, data: any) => {
-  console.warn("Operação PUT não suportada pela API")
-  throw new Error("Operação não suportada")
 }
 
 export const deleteFornecedor = async (id: number) => {
@@ -118,6 +68,53 @@ export const deleteFornecedor = async (id: number) => {
 // Usuários API
 export const getUsuarios = async () => {
   return apiRequest("api/usuarios")
+}
+
+// Compras API
+export const getCompras = async () => {
+  return apiRequest("api/compras")
+}
+
+export const getCompraById = async (id: number) => {
+  return apiRequest(`api/compras/${id}`)
+}
+
+export const createCompra = async (data: {
+  observacao: string
+  id_peça: string
+  id_usuario: string
+  id_fornecedor: string
+}) => {
+  return apiRequest("api/compras", "POST", data)
+}
+
+export const updateCompra = async (id: number, data: { observacao: string }) => {
+  return apiRequest(`api/compras/${id}`, "PATCH", data)
+}
+
+export const deleteCompra = async (id: number) => {
+  return apiRequest(`api/compras/${id}`, "DELETE")
+}
+
+// Pedidos API
+export const getPedidos = async () => {
+  return apiRequest("api/pedidos")
+}
+
+export const getPedidoById = async (id: number) => {
+  return apiRequest(`api/pedidos/${id}`)
+}
+
+export const createPedido = async (data: any) => {
+  return apiRequest("api/pedidos", "POST", data)
+}
+
+export const updatePedido = async (id: number, data: any) => {
+  return apiRequest(`api/pedidos/${id}`, "PATCH", data)
+}
+
+export const deletePedido = async (id: number) => {
+  return apiRequest(`api/pedidos/${id}`, "DELETE")
 }
 
 // Helper function to fix encoding issues in text
