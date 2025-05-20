@@ -8,7 +8,18 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { LayoutDashboard, Package, Truck, Settings, Menu, LogOut } from "lucide-react"
+import {
+  LayoutDashboard,
+  Package,
+  Truck,
+  Users,
+  Settings,
+  Menu,
+  LogOut,
+  ShoppingCart,
+  ShoppingBag,
+  User,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
 import { logout } from "@/lib/auth-service"
@@ -40,6 +51,30 @@ export function Sidebar({ className }: SidebarProps) {
       active: pathname.includes("/dashboard/fornecedores"),
     },
     {
+      label: "Compras",
+      icon: ShoppingCart,
+      href: "/dashboard/compras",
+      active: pathname.includes("/dashboard/compras"),
+    },
+    {
+      label: "Pedidos",
+      icon: ShoppingBag,
+      href: "/dashboard/pedidos",
+      active: pathname.includes("/dashboard/pedidos"),
+    },
+    {
+      label: "Usuários",
+      icon: Users,
+      href: "/dashboard/usuarios",
+      active: pathname.includes("/dashboard/usuarios"),
+    },
+    {
+      label: "Meu Perfil",
+      icon: User,
+      href: "/dashboard/perfil",
+      active: pathname.includes("/dashboard/perfil"),
+    },
+    {
       label: "Configurações",
       icon: Settings,
       href: "/dashboard/configuracoes",
@@ -56,7 +91,21 @@ export function Sidebar({ className }: SidebarProps) {
     <div className={cn("flex h-full flex-col", className)}>
       <div className="border-b px-6 py-4">
         <Link href="/dashboard" className="flex items-center gap-2">
-          <Package className="h-6 w-6" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="40"
+            height="40"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#6DB33F"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
           <span className="text-xl font-bold">Overclock MRP</span>
         </Link>
       </div>
@@ -64,12 +113,7 @@ export function Sidebar({ className }: SidebarProps) {
         <nav className="flex flex-col gap-2">
           {routes.map((route) => (
             <Link key={route.href} href={route.href} onClick={() => setOpen(false)}>
-              <Button
-                variant={route.active ? "default" : "ghost"}
-                className={cn("w-full justify-start", {
-                  "bg-gray-100 text-gray-900": route.active,
-                })}
-              >
+              <Button variant={route.active ? "default" : "ghost"} className={cn("w-full justify-start")}>
                 <route.icon className="mr-2 h-5 w-5" />
                 {route.label}
               </Button>
