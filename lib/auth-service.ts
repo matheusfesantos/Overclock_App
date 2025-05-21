@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { API_URL } from "@/lib/constants"
+import { toast } from "sonner"
 
 interface UserInfo {
   id: number
@@ -28,14 +28,12 @@ interface AuthResponse {
   }
 }
 
-// Store token in localStorage
 const setToken = (token: string) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("token", token)
   }
 }
 
-// Get token from localStorage
 export const getToken = (): string | null => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("token")
@@ -43,7 +41,6 @@ export const getToken = (): string | null => {
   return null
 }
 
-// Store user info in localStorage
 const setUserInfo = (userInfo: UserInfo) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("userInfo", JSON.stringify(userInfo))
@@ -66,6 +63,8 @@ const clearAuthData = () => {
     localStorage.removeItem("userInfo")
   }
 }
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 // Login user
 export const loginUser = async (username: string, password: string): Promise<void> => {
@@ -118,7 +117,8 @@ export const registerUser = async (userData: RegisterData): Promise<void> => {
     })
 
     if (!response.ok) {
-      throw new Error("Falha no registro. Verifique os dados e tente novamente.")
+      const errorData = await response.json()
+      toast.error(errorData.message || "Falha no registro. Verifique os dados e tente novamente.")  
     }
 
     return
@@ -128,18 +128,15 @@ export const registerUser = async (userData: RegisterData): Promise<void> => {
   }
 }
 
-// Logout user
 export const logout = async (): Promise<void> => {
   clearAuthData()
 }
 
-// Check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {
   const token = getToken()
   return !!token
 }
 
-// Hook to get user info
 export const useUserInfo = () => {
   const [userInfo, setUserInfoState] = useState<UserInfo | null>(null)
 

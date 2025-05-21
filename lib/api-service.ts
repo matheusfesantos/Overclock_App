@@ -3,7 +3,6 @@
 import { getToken } from "@/lib/auth-service"
 import { API_URL } from "@/lib/constants"
 
-// Helper function to make authenticated API requests
 const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
   const token = getToken()
   const headers: HeadersInit = {
@@ -68,6 +67,10 @@ export const deleteFornecedor = async (id: number) => {
 // Usuários API
 export const getUsuarios = async () => {
   return apiRequest("api/usuarios")
+}
+
+export const getUserDetails = async () => {
+  return apiRequest("api/usuarios/me")
 }
 
 // Compras API

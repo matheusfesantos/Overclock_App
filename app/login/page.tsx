@@ -84,14 +84,6 @@ export default function LoginPage() {
             </div>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col space-y-4">
-          <div className="text-center text-sm">
-            Não tem uma conta?{" "}
-            <Link href="/register" className="text-primary hover:underline">
-              Registre-se
-            </Link>
-          </div>
-        </CardFooter>
       </Card>
     </div>
   )
