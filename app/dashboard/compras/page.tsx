@@ -89,7 +89,6 @@ interface Fornecedor {
 }
 
 export default function ComprasPage() {
-  // Estado
   const [compras, setCompras] = useState<Compra[]>([])
   const [filteredCompras, setFilteredCompras] = useState<Compra[]>([])
   const [pecas, setPecas] = useState<Peca[]>([])
@@ -148,11 +147,6 @@ export default function ComprasPage() {
       setFornecedores(fornecedoresData)
     } catch (error) {
       console.error("Erro ao buscar dados:", error)
-      toast({
-        title: "Erro",
-        description: "Não foi possível carregar os dados",
-        variant: "destructive",
-      })
     } finally {
       setLoading(false)
     }

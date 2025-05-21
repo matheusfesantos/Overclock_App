@@ -62,23 +62,19 @@ export function Sidebar({ className }: SidebarProps) {
       href: "/dashboard/pedidos",
       active: pathname.includes("/dashboard/pedidos"),
     },
+    /*
     {
       label: "Usuários",
       icon: Users,
       href: "/dashboard/usuarios",
       active: pathname.includes("/dashboard/usuarios"),
     },
+    */
     {
       label: "Meu Perfil",
       icon: User,
       href: "/dashboard/perfil",
       active: pathname.includes("/dashboard/perfil"),
-    },
-    {
-      label: "Configurações",
-      icon: Settings,
-      href: "/dashboard/configuracoes",
-      active: pathname.includes("/dashboard/configuracoes"),
     },
   ]
 
