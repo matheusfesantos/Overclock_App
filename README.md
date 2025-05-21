@@ -1,11 +1,5 @@
 # Overclock MRP System
 
-<p align="center">
-  <a href="#"><img src="https://img.shields.io/badge/version-1.0.0-blue.svg" alt="Version 1.0.0"></a>
-  <a href="#"><img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License MIT"></a>
-  <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome"></a>
-</p>
-
 ## 🧠 Visão Geral
 
 O **Overclock MRP** é um sistema moderno de Planejamento de Recursos de Materiais (MRP) voltado para empresas que buscam gerenciar com eficiência peças, fornecedores, compras e pedidos. Ele combina uma interface amigável com uma estrutura robusta, oferecendo controle total sobre os recursos e operações de estoque.
