@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
 import { loginUser } from "@/lib/auth-service"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const {toast} = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,6 +30,10 @@ export default function LoginPage() {
 
     try {
       await loginUser(username, password)
+      toast({
+        title:"Sucess",
+        description: "Logado com sucesso"
+      })
       router.push("/dashboard")
     } catch (err: any) {
       setError(err.message || "Falha na autenticação. Verifique suas credenciais.")
