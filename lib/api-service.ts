@@ -2,6 +2,7 @@
 
 import { getToken } from "@/lib/auth-service"
 import { API_URL } from "@/lib/constants"
+import { toast } from "sonner"
 
 const apiRequest = async (endpoint: string, method = "GET", body?: any) => {
   const token = getToken()
@@ -48,7 +49,14 @@ export const getPecaById = async (id: number) => {
 }
 
 export const deletePeca = async (id: number) => {
-  return apiRequest(`api/pecas/${id}`, "DELETE")
+  try {
+    const response = await apiRequest(`api/pecas/${id}`, "DELETE")
+    toast.success(response.message)
+    return response
+  } catch (error: any) {
+    toast.error(error.message)
+    throw error
+  }
 }
 
 // Fornecedores API
@@ -61,7 +69,14 @@ export const getFornecedorById = async (id: number) => {
 }
 
 export const deleteFornecedor = async (id: number) => {
-  return apiRequest(`api/fornecedores/${id}`, "DELETE")
+  try {
+    const response = await apiRequest(`api/fornecedores/${id}`, "DELETE")
+    toast.success(response.message)
+    return response
+  } catch (error: any) {
+    toast.error(error.message)
+    throw error
+  }
 }
 
 // Usuários API
@@ -83,12 +98,18 @@ export const getCompraById = async (id: number) => {
 }
 
 export const createCompra = async (data: {
-  observacao: string
-  id_peça: string
-  id_usuario: string
-  id_fornecedor: string
+  id_peca: number
+  id_fornecedor: number
 }) => {
-  return apiRequest("api/compras", "POST", data)
+  try{
+    const response = await apiRequest("api/compras", "POST", data)
+    toast.success(response.message)
+    return response
+  }
+  catch (error: any) {
+    toast.error(error.message)
+    throw error
+  }
 }
 
 export const updateCompra = async (id: number, data: { observacao: string }) => {
@@ -96,6 +117,7 @@ export const updateCompra = async (id: number, data: { observacao: string }) => 
 }
 
 export const deleteCompra = async (id: number) => {
+  toast.error("Compra deletada com sucesso")
   return apiRequest(`api/compras/${id}`, "DELETE")
 }
 

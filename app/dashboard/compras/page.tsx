@@ -40,6 +40,8 @@ import {
 } from "@/lib/api-service"
 import { useUserInfo } from "@/lib/auth-service"
 import { useToast } from "@/hooks/use-toast"
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Interface baseada no JSON fornecido
 interface Compra {
@@ -69,13 +71,6 @@ interface Compra {
     email: string
     username: string
   }
-  fornecedor: {
-    id_fornecedor: number
-    nome_fornecedor: string
-    cpnj_fornecedor: string
-    telefone_fornecedor: string
-    email_fornecedor: string
-  }
 }
 
 interface Peca {
@@ -102,7 +97,7 @@ export default function ComprasPage() {
 
   const [formData, setFormData] = useState({
     observacao: "",
-    id_peça: "",
+    id_peca: "",
     id_fornecedor: "",
   })
 
@@ -123,7 +118,7 @@ export default function ComprasPage() {
         (compra) =>
           compra.observacao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
           fixEncoding(compra.pecas.nome_do_produto).toLowerCase().includes(searchTerm.toLowerCase()) ||
-          fixEncoding(compra.fornecedor.nome_fornecedor).toLowerCase().includes(searchTerm.toLowerCase()),
+          fixEncoding(compra.pecas.fornecedor.nome_fornecedor).toLowerCase().includes(searchTerm.toLowerCase()),
       )
       setFilteredCompras(filtered)
     } else {
@@ -155,7 +150,7 @@ export default function ComprasPage() {
   // Criar nova compra
   const handleCreate = async () => {
     try {
-      if (!formData.id_peça || !formData.id_fornecedor || !formData.observacao) {
+      if (!formData.id_peca || !formData.id_fornecedor) {
         toast({
           title: "Erro",
           description: "Preencha todos os campos obrigatórios",
@@ -165,8 +160,8 @@ export default function ComprasPage() {
       }
 
       const data = {
-        ...formData,
-        id_usuario: userInfo?.id.toString() || "1",
+        id_peca: Number(formData.id_peca),
+        id_fornecedor: Number(formData.id_fornecedor),
       }
 
       await createCompra(data)
@@ -174,7 +169,7 @@ export default function ComprasPage() {
 
       setFormData({
         observacao: "",
-        id_peça: "",
+        id_peca: "",
         id_fornecedor: "",
       })
 
@@ -268,6 +263,7 @@ export default function ComprasPage() {
 
   return (
     <div className="space-y-6">
+      <ToastContainer/>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold">Compras</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -286,8 +282,8 @@ export default function ComprasPage() {
               <div className="space-y-2">
                 <Label htmlFor="peca">Peça</Label>
                 <Select
-                  value={formData.id_peça}
-                  onValueChange={(value) => setFormData({ ...formData, id_peça: value })}
+                  value={formData.id_peca}
+                  onValueChange={(value) => setFormData({ ...formData, id_peca: value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione uma peça" />
@@ -318,15 +314,6 @@ export default function ComprasPage() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="observacao">Observação</Label>
-                <Textarea
-                  id="observacao"
-                  placeholder="Descreva o motivo da compra"
-                  value={formData.observacao}
-                  onChange={(e) => setFormData({ ...formData, observacao: e.target.value })}
-                />
               </div>
             </div>
             <DialogFooter>
@@ -379,7 +366,6 @@ export default function ComprasPage() {
                     <TableHead>Peça</TableHead>
                     <TableHead>Fornecedor</TableHead>
                     <TableHead>Usuário</TableHead>
-                    <TableHead>Observação</TableHead>
                     <TableHead className="text-right">Ações</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -388,9 +374,8 @@ export default function ComprasPage() {
                     <TableRow key={compra.id_compra}>
                       <TableCell>{formatDate(compra.data_compra)}</TableCell>
                       <TableCell>{fixEncoding(compra.pecas.nome_do_produto)}</TableCell>
-                      <TableCell>{fixEncoding(compra.fornecedor.nome_fornecedor)}</TableCell>
+                      <TableCell>{fixEncoding(compra.pecas.fornecedor.nome_fornecedor)}</TableCell>
                       <TableCell>{fixEncoding(compra.usuarios.nome)}</TableCell>
-                      <TableCell>{fixEncoding(compra.observacao)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button variant="outline" size="icon" onClick={() => openEditDialog(compra)}>
@@ -438,19 +423,7 @@ export default function ComprasPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Editar Compra</DialogTitle>
-            <DialogDescription>Atualize a observação da compra.</DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="edit-observacao">Observação</Label>
-              <Textarea
-                id="edit-observacao"
-                placeholder="Descreva o motivo da compra"
-                value={editObservacao}
-                onChange={(e) => setEditObservacao(e.target.value)}
-              />
-            </div>
-          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancelar
