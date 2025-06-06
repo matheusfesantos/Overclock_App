@@ -100,6 +100,8 @@ export const getCompraById = async (id: number) => {
 export const createCompra = async (data: {
   id_peca: number
   id_fornecedor: number
+  quantidade: number
+  observacao: string
 }) => {
   try{
     const response = await apiRequest("api/compras", "POST", data)
@@ -130,16 +132,29 @@ export const getPedidoById = async (id: number) => {
   return apiRequest(`api/pedidos/${id}`)
 }
 
-export const createPedido = async (data: any) => {
-  return apiRequest("api/pedidos", "POST", data)
+  export const createPedido = async (data: {
+    id_peca: number
+    id_fornecedor: number
+    quantidade: number
+    observacao: string
+  }) => {
+  try{
+    const response = await apiRequest("api/pedidos", "POST", data)
+    toast.success(response.message)
+    return response
+  }
+  catch (error: any) {
+    toast.error(error.message)
+    throw error
+  }
 }
 
 export const updatePedido = async (id: number, data: any) => {
   return apiRequest(`api/pedidos/${id}`, "PATCH", data)
 }
 
-export const deletePedido = async (id: number) => {
-  return apiRequest(`api/pedidos/${id}`, "DELETE")
+export const deletePedido = async (id_pedido: number) => {
+  return apiRequest(`api/pedidos/${id_pedido}`, "DELETE")
 }
 
 // Helper function to fix encoding issues in text

@@ -72,7 +72,7 @@ export default function DashboardPage() {
       <Card>
         <CardContent className="pt-6">
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold">Olá, seja bem-vindo {userInfo?.nome || "Usuário"}!</h2>
+            <h2 className="text-2xl font-bold">Olá, seja bem-vindo!</h2>
             <p className="text-muted-foreground">{currentDateTime}</p>
           </div>
         </CardContent>
@@ -142,6 +142,11 @@ export default function DashboardPage() {
             <li>
               <a href="/dashboard/pedidos" className="text-primary hover:underline">
                 Gerenciar Pedidos
+              </a>
+            </li>
+            <li>
+              <a href="/dashboard/pedidos" className="text-primary hover:underline">
+                Acompanhar movimentações
               </a>
             </li>
           </ul>
