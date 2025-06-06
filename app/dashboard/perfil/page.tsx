@@ -11,7 +11,6 @@ import { AlertCircle, CheckCircle } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { getUserDetails } from "@/lib/api-service"
 
 export interface Authority {
   authority: string;

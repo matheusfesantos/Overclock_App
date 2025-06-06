@@ -42,15 +42,6 @@ export function Header() {
       </div>
       <div className="ml-auto flex items-center gap-4">
         <ThemeToggle />
-        <Button variant="outline" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          {notifications > 0 && (
-            <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-              {notifications}
-            </span>
-          )}
-          <span className="sr-only">Notificações</span>
-        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -69,20 +60,10 @@ export function Header() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
-            <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">{userInfo?.nome || "Usuário"}</p>
-                <p className="text-xs leading-none text-muted-foreground">{userInfo?.email || "usuario@email.com"}</p>
-              </div>
-            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={navigateToProfile}>
               <User className="mr-2 h-4 w-4" />
               <span>Perfil</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={navigateToSettings}>
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Configurações</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>

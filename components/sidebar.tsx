@@ -19,6 +19,7 @@ import {
   ShoppingCart,
   ShoppingBag,
   User,
+  Car,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useMobile } from "@/hooks/use-mobile"
@@ -62,14 +63,12 @@ export function Sidebar({ className }: SidebarProps) {
       href: "/dashboard/pedidos",
       active: pathname.includes("/dashboard/pedidos"),
     },
-    /*
     {
-      label: "Usuários",
-      icon: Users,
-      href: "/dashboard/usuarios",
-      active: pathname.includes("/dashboard/usuarios"),
+      label: "Movimentações",
+      icon: Car,
+      href: "/dashboard/movimentacoes",
+      active: pathname.includes("/dashboard/movimentacoes"),
     },
-    */
     {
       label: "Meu Perfil",
       icon: User,
